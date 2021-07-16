@@ -105,7 +105,7 @@ arf_rnd_to_mpfr(arf_rnd_t rnd)
 #define ARF_XSIZE(x) ((x)->size)
 
 /* Construct size field value from size in limbs and sign bit. */
-#define ARF_MAKE_XSIZE(size, sgnbit) ((((mp_size_t) size) << 1) | sgnbit)
+#define ARF_MAKE_XSIZE(size, sgnbit) ((((mp_size_t) size) << 1) | (sgnbit))
 
 /* The limb size, and the sign bit. */
 #define ARF_SIZE(x) (ARF_XSIZE(x) >> 1)
@@ -796,6 +796,8 @@ void arf_randtest(arf_t x, flint_rand_t state, slong bits, slong mag_bits);
 void arf_randtest_not_zero(arf_t x, flint_rand_t state, slong bits, slong mag_bits);
 
 void arf_randtest_special(arf_t x, flint_rand_t state, slong bits, slong mag_bits);
+
+void arf_urandom(arf_t x, flint_rand_t state, slong bits, arf_rnd_t rnd);
 
 #define MUL_MPFR_MIN_LIMBS 25
 #define MUL_MPFR_MAX_LIMBS 10000
