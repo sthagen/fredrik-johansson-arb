@@ -27,9 +27,9 @@ extern "C" {
 #endif
 
 #define __ARB_VERSION 2
-#define __ARB_VERSION_MINOR 19
+#define __ARB_VERSION_MINOR 20
 #define __ARB_VERSION_PATCHLEVEL 0
-#define ARB_VERSION "2.19.0"
+#define ARB_VERSION "2.20.0"
 #define __ARB_RELEASE (__ARB_VERSION * 10000 + \
                          __ARB_VERSION_MINOR * 100 + \
                          __ARB_VERSION_PATCHLEVEL)
@@ -424,6 +424,10 @@ void arb_submul_arf(arb_t z, const arb_t x, const arf_t y, slong prec);
 void arb_submul_si(arb_t z, const arb_t x, slong y, slong prec);
 void arb_submul_ui(arb_t z, const arb_t x, ulong y, slong prec);
 void arb_submul_fmpz(arb_t z, const arb_t x, const fmpz_t y, slong prec);
+
+void arb_fma(arb_t res, const arb_t x, const arb_t y, const arb_t z, slong prec);
+void arb_fma_arf(arb_t res, const arb_t x, const arf_t y, const arb_t z, slong prec);
+void arb_fma_ui(arb_t res, const arb_t x, ulong y, const arb_t z, slong prec);
 
 void arb_dot_simple(arb_t res, const arb_t initial, int subtract,
     arb_srcptr x, slong xstep, arb_srcptr y, slong ystep, slong len, slong prec);
