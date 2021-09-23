@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2014 Fredrik Johansson
+    Copyright (C) 2021 Fredrik Johansson
 
     This file is part of Arb.
 
@@ -9,33 +9,22 @@
     (at your option) any later version.  See <http://www.gnu.org/licenses/>.
 */
 
-#include "acb.h"
+#include "acb_hypgeom.h"
 
-/* assumes y and x are not aliased */
 static void
 bsplit(acb_t y, const acb_t x, ulong a, ulong b, slong prec)
 {
-    if (b - a == 1)
+    if (b - a <= 4)
     {
-        acb_set_round(y, x, prec);
-    }
-    else if (b - a <= 10)
-    {
-        slong i;
-        acb_t t;
-        acb_init(t);
-
-        acb_add_ui(t, x, a, prec);
-        acb_add_ui(y, x, a + 1, prec);
-        acb_mul(y, y, t, prec);
-
-        for (i = a + 2; i < b; i++)
+        if (a == 0)
         {
-            acb_add_ui(t, x, i, prec);
-            acb_mul(y, y, t, prec);
+            acb_hypgeom_rising_ui_forward(y, x, b, prec);
         }
-
-        acb_clear(t);
+        else
+        {
+            acb_add_ui(y, x, a, prec);
+            acb_hypgeom_rising_ui_forward(y, y, b - a, prec);
+        }
     }
     else
     {
@@ -56,24 +45,24 @@ bsplit(acb_t y, const acb_t x, ulong a, ulong b, slong prec)
 }
 
 void
-acb_rising_ui_bs(acb_t y, const acb_t x, ulong n, slong prec)
+acb_hypgeom_rising_ui_bs(acb_t res, const acb_t x, ulong n, slong prec)
 {
-    if (n == 0)
+    if (n <= 1)
     {
-        acb_one(y);
+        if (n == 0)
+            acb_one(res);
+        else
+            acb_set_round(res, x, prec);
+        return;
     }
-    else if (n == 1)
-    {
-        acb_set_round(y, x, prec);
-    }
-    else
+
     {
         acb_t t;
         slong wp = ARF_PREC_ADD(prec, FLINT_BIT_COUNT(n));
 
         acb_init(t);
         bsplit(t, x, 0, n, wp);
-        acb_set_round(y, t, prec);
+        acb_set_round(res, t, prec);
         acb_clear(t);
     }
 }

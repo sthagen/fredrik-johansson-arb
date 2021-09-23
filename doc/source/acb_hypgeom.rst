@@ -19,10 +19,101 @@ with prefactors that are products of exponentials, powers, and gamma functions.
 Rising factorials
 -------------------------------------------------------------------------------
 
-.. function:: void acb_hypgeom_rising_ui_rs(acb_t res, const acb_t x, ulong n, ulong m, slong prec)
+.. function:: void acb_hypgeom_rising_ui_forward(acb_t res, const acb_t x, ulong n, slong prec)
+              void acb_hypgeom_rising_ui_bs(acb_t res, const acb_t x, ulong n, slong prec)
+              void acb_hypgeom_rising_ui_rs(acb_t res, const acb_t x, ulong n, ulong m, slong prec)
+              void acb_hypgeom_rising_ui_rec(acb_t res, const acb_t x, ulong n, slong prec)
+              void acb_hypgeom_rising_ui(acb_t res, const acb_t x, ulong n, slong prec)
+              void acb_hypgeom_rising(acb_t res, const acb_t x, const acb_t n, slong prec)
 
-    Computes the rising factorial `(x)_n` using rectangular splitting.
-    The splitting parameter *m* can be set to zero to choose automatically.
+    Computes the rising factorial `(x)_n`.
+
+    The *forward* version uses the forward recurrence.
+    The *bs* version uses binary splitting.
+    The *rs* version uses rectangular splitting. It takes an extra tuning
+    parameter *m* which can be set to zero to choose automatically.
+    The *rec* version chooses an algorithm automatically, avoiding
+    use of the gamma function (so that it can be used in the computation
+    of the gamma function).
+    The default versions (*rising_ui* and *rising_ui*) choose an algorithm
+    automatically and may additionally fall back on the gamma function.
+
+.. function:: void acb_hypgeom_rising_ui_jet_powsum(acb_ptr res, const acb_t x, ulong n, slong len, slong prec)
+              void acb_hypgeom_rising_ui_jet_bs(acb_ptr res, const acb_t x, ulong n, slong len, slong prec)
+              void acb_hypgeom_rising_ui_jet_rs(acb_ptr res, const acb_t x, ulong n, ulong m, slong len, slong prec)
+              void acb_hypgeom_rising_ui_jet(acb_ptr res, const acb_t x, ulong n, slong len, slong prec)
+
+    Computes the jet of the rising factorial `(x)_n`, truncated to length *len*.
+    In other words, constructs the polynomial `(X + x)_n \in \mathbb{R}[X]`,
+    truncated if `\operatorname{len} < n + 1` (and zero-extended
+    if `\operatorname{len} > n + 1`).
+
+    The *powsum* version computes the sequence of powers of *x* and forms integral
+    linear combinations of these.
+    The *bs* version uses binary splitting.
+    The *rs* version uses rectangular splitting. It takes an extra tuning
+    parameter *m* which can be set to zero to choose automatically.
+    The default version chooses an algorithm automatically.
+
+.. function:: void acb_hypgeom_log_rising_ui(acb_ptr res, const acb_t x, ulong n, slong prec)
+
+    Computes the log-rising factorial `\log \, (x)_n = \sum_{k=0}^{n-1} \log(x+k)`.
+
+    This first computes the ordinary rising factorial and then determines
+    the branch correction `2 \pi i m` with respect to the principal
+    logarithm. The correction is computed using Hare's algorithm in
+    floating-point arithmetic if this is safe; otherwise,
+    a direct computation of `\sum_{k=0}^{n-1} \arg(x+k)` is used as a fallback.
+
+.. function:: void acb_hypgeom_log_rising_ui_jet(acb_ptr res, const acb_t x, ulong n, slong len, slong prec)
+
+    Computes the jet of the log-rising factorial `\log \, (x)_n`,
+    truncated to length *len*.
+
+Gamma function
+-------------------------------------------------------------------------------
+
+.. function:: void acb_hypgeom_gamma_stirling_sum_horner(acb_t s, const acb_t z, slong N, slong prec)
+              void acb_hypgeom_gamma_stirling_sum_improved(acb_t s, const acb_t z, slong N, slong K, slong prec)
+
+    Sets *res* to the final sum in the Stirling series for the gamma function
+    truncated before the term with index *N*, i.e. computes
+    `\sum_{n=1}^{N-1} B_{2n} / (2n(2n-1) z^{2n-1})`.
+    The *horner* version uses Horner scheme with gradual precision adjustments.
+    The *improved* version uses rectangular splitting for the low-index
+    terms and reexpands the high-index terms as hypergeometric polynomials,
+    using a splitting parameter *K* (which can be set to 0 to use a default
+    value).
+
+.. function:: void acb_hypgeom_gamma_stirling(acb_t res, const acb_t x, int reciprocal, slong prec)
+
+    Sets *res* to the gamma function of *x* computed using the Stirling
+    series together with argument reduction. If *reciprocal* is set,
+    the reciprocal gamma function is computed instead.
+
+.. function:: int acb_hypgeom_gamma_taylor(acb_t res, const acb_t x, int reciprocal, slong prec)
+
+    Attempts to compute the gamma function of *x* using Taylor series
+    together with argument reduction. This is only supported if *x* and *prec*
+    are both small enough. If successful, returns 1; otherwise, does nothing
+    and returns 0. If *reciprocal* is set, the reciprocal gamma function is
+    computed instead.
+
+.. function:: void acb_hypgeom_gamma(acb_t res, const acb_t x, slong prec)
+
+    Sets *res* to the gamma function of *x* computed using a default
+    algorithm choice.
+
+.. function:: void acb_hypgeom_rgamma(acb_t res, const acb_t x, slong prec)
+
+    Sets *res* to the reciprocal gamma function of *x* computed using a default
+    algorithm choice.
+
+.. function:: void acb_hypgeom_lgamma(acb_t res, const acb_t x, slong prec)
+
+    Sets *res* to the principal branch of the log-gamma function of *x*
+    computed using a default algorithm choice.
+
 
 Convergent series
 -------------------------------------------------------------------------------

@@ -331,6 +331,13 @@ acb_add_error_mag(acb_t x, const mag_t err)
     arb_add_error_mag(acb_imagref(x), err);
 }
 
+ACB_INLINE void
+acb_add_error_arb(acb_t x, const arb_t err)
+{
+    arb_add_error(acb_realref(x), err);
+    arb_add_error(acb_imagref(x), err);
+}
+
 void acb_get_mag(mag_t z, const acb_t x);
 
 void acb_get_mag_lower(mag_t z, const acb_t x);
@@ -761,14 +768,8 @@ void acb_chebyshev_t2_ui(acb_t a, acb_t b, ulong n, const acb_t x, slong prec);
 void acb_chebyshev_u_ui(acb_t a, ulong n, const acb_t x, slong prec);
 void acb_chebyshev_u2_ui(acb_t a, acb_t b, ulong n, const acb_t x, slong prec);
 
-void acb_rising_ui_bs(acb_t y, const acb_t x, ulong n, slong prec);
-void acb_rising_ui_rs(acb_t y, const acb_t x, ulong n, ulong m, slong prec);
-void acb_rising_ui_rec(acb_t y, const acb_t x, ulong n, slong prec);
 void acb_rising_ui(acb_t z, const acb_t x, ulong n, slong prec);
 void acb_rising(acb_t z, const acb_t x, const acb_t n, slong prec);
-
-void acb_rising2_ui_bs(acb_t u, acb_t v, const acb_t x, ulong n, slong prec);
-void acb_rising2_ui_rs(acb_t u, acb_t v, const acb_t x, ulong n, ulong m, slong prec);
 void acb_rising2_ui(acb_t u, acb_t v, const acb_t x, ulong n, slong prec);
 
 void acb_rising_ui_get_mag(mag_t bound, const acb_t s, ulong n);
@@ -859,6 +860,14 @@ _acb_vec_set_round(acb_ptr res, acb_srcptr vec, slong len, slong prec)
     slong i;
     for (i = 0; i < len; i++)
         acb_set_round(res + i, vec + i, prec);
+}
+
+ACB_INLINE void
+_acb_vec_swap(acb_ptr res, acb_ptr vec, slong len)
+{
+    slong i;
+    for (i = 0; i < len; i++)
+        acb_swap(res + i, vec + i);
 }
 
 ACB_INLINE void
@@ -1014,6 +1023,18 @@ ACB_INLINE void
 acb_printn(const acb_t x, slong digits, ulong flags)
 {
     acb_fprintn(stdout, x, digits, flags);
+}
+
+ACB_INLINE void
+_acb_vec_printn(acb_srcptr vec, slong len, slong ndigits, ulong flags)
+{
+    slong i;
+    for (i = 0; i < len; i++)
+    {
+        acb_printn(vec + i, ndigits, flags);
+        if (i < len - 1)
+            flint_printf(", ");
+    }
 }
 
 void acb_randtest(acb_t z, flint_rand_t state, slong prec, slong mag_bits);

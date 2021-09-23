@@ -139,7 +139,11 @@ Basic manipulation
 
     Swaps *z* and *x* efficiently.
 
+.. function:: void acb_add_error_arf(acb_t x, const arf_t err)
+
 .. function:: void acb_add_error_mag(acb_t x, const mag_t err)
+
+.. function:: void acb_add_error_arb(acb_t x, const arb_t err)
 
     Adds *err* to the error bounds of both the real and imaginary
     parts of *x*, modifying *x* in-place.
@@ -662,11 +666,11 @@ Exponentials and logarithms
 
 .. function:: void acb_exp_invexp(acb_t s, acb_t t, const acb_t z, slong prec)
 
-    Sets `v = \exp(z)` and `w = \exp(-z)`.
+    Sets `s = \exp(z)` and `t = \exp(-z)`.
 
 .. function:: void acb_expm1(acb_t res, const acb_t z, slong prec)
 
-    Computes `\exp(z)-1`, using an accurate method when `z \approx 0`.
+    Sets *res* to `\exp(z)-1`, using a more accurate method when `z \approx 0`.
 
 .. function:: void acb_log(acb_t y, const acb_t z, slong prec)
 
@@ -864,36 +868,18 @@ Lambert W function
 Rising factorials
 -------------------------------------------------------------------------------
 
-.. function:: void acb_rising_ui_bs(acb_t z, const acb_t x, ulong n, slong prec)
-
-.. function:: void acb_rising_ui_rs(acb_t z, const acb_t x, ulong n, ulong step, slong prec)
-
-.. function:: void acb_rising_ui_rec(acb_t z, const acb_t x, ulong n, slong prec)
-
-.. function:: void acb_rising_ui(acb_t z, const acb_t x, ulong n, slong prec)
-
-.. function:: void acb_rising(acb_t z, const acb_t x, const acb_t n, slong prec)
+.. function:: void acb_rising_ui(acb_t z, const acb_t x, const acb_t n, slong prec)
+              void acb_rising(acb_t z, const acb_t x, const acb_t n, slong prec)
 
     Computes the rising factorial `z = x (x+1) (x+2) \cdots (x+n-1)`.
-
-    The *bs* version uses binary splitting. The *rs* version uses rectangular
-    splitting. The *rec* version uses either *bs* or *rs* depending
-    on the input. The default version uses the gamma function unless
-    *n* is a small integer.
-
-    The *rs* version takes an optional *step* parameter for tuning
-    purposes (to use the default step length, pass zero).
-
-.. function :: void acb_rising2_ui_bs(acb_t u, acb_t v, const acb_t x, ulong n, slong prec)
-
-.. function :: void acb_rising2_ui_rs(acb_t u, acb_t v, const acb_t x, ulong n, ulong step, slong prec)
+    These functions are aliases for :func:`acb_hypgeom_rising_ui`
+    and :func:`acb_hypgeom_rising`.
 
 .. function :: void acb_rising2_ui(acb_t u, acb_t v, const acb_t x, ulong n, slong prec)
 
     Letting `u(x) = x (x+1) (x+2) \cdots (x+n-1)`, simultaneously compute
-    `u(x)` and `v(x) = u'(x)`, respectively using binary splitting,
-    rectangular splitting (with optional nonzero step length *step*
-    to override the default choice), and an automatic algorithm choice.
+    `u(x)` and `v(x) = u'(x)`.
+    This function is a wrapper of :func:`acb_hypgeom_rising_ui_jet`.
 
 .. function :: void acb_rising_ui_get_mag(mag_t bound, const acb_t x, ulong n)
 
@@ -907,15 +893,18 @@ Gamma function
 .. function:: void acb_gamma(acb_t y, const acb_t x, slong prec)
 
     Computes the gamma function `y = \Gamma(x)`.
+    This is an alias for :func:`acb_hypgeom_gamma`.
 
 .. function:: void acb_rgamma(acb_t y, const acb_t x, slong prec)
 
     Computes the reciprocal gamma function  `y = 1/\Gamma(x)`,
     avoiding division by zero at the poles of the gamma function.
+    This is an alias for :func:`acb_hypgeom_rgamma`.
 
 .. function:: void acb_lgamma(acb_t y, const acb_t x, slong prec)
 
     Computes the logarithmic gamma function `y = \log \Gamma(x)`.
+    This is an alias for :func:`acb_hypgeom_lgamma`.
 
     The branch cut of the logarithmic gamma function is placed on the
     negative half-axis, which means that
@@ -1180,6 +1169,10 @@ Vector functions
 .. function:: void _acb_vec_set_round(acb_ptr res, acb_srcptr vec, slong len, slong prec)
 
     Sets *res* to a copy of *vec*, rounding each entry to *prec* bits.
+
+.. function:: void _acb_vec_swap(acb_ptr vec1, acb_ptr vec2, slong len)
+
+    Swaps the entries of *vec1* and *vec2*.
 
 .. function:: void _acb_vec_neg(acb_ptr res, acb_srcptr vec, slong len)
 

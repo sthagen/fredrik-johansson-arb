@@ -13,18 +13,21 @@
 #include "bernoulli.h"
 
 /* tuning factor */
-double GAMMA_STIRLING_BETA = 0.27;
+double GAMMA_STIRLING_BETA = 0.0;
 
 #define PI 3.1415926535897932385
 
 static slong
 choose_n(double log2z, double argz, int digamma, slong prec)
 {
-    double argf, boundn;
-    slong n;
+    double argf, boundn, boundn_best;
+    slong n, nbest;
 
     argf = 1.0 / cos(0.5 * argz);
     argf = log(argf) * (1. / log(2));
+
+    boundn_best = 1e300;
+    nbest = 1;
 
     for (n = 1; ; n++)
     {
@@ -37,11 +40,17 @@ choose_n(double log2z, double argz, int digamma, slong prec)
         if (boundn <= -prec)
             return n;
 
+        if (boundn < boundn_best)
+        {
+            nbest = n;
+            boundn_best = boundn;
+        }
+
         /* if the term magnitude does not decrease, r is too small */
         if (boundn > 1)
         {
-            flint_printf("exception: gamma_stirling_choose_param failed to converge\n");
-            flint_abort();
+            /* printf("failure: prec = %ld, nbound_best = %f [%ld, %ld]\n", prec, boundn_best, n, nbest); */
+            return nbest;
         }
     }
 }
@@ -50,7 +59,7 @@ static void
 choose_small(int * reflect, slong * r, slong * n,
     double x, double y, int use_reflect, int digamma, slong prec)
 {
-    double w, argz, log2z;
+    double w, argz, log2z, BETA;
     slong rr;
 
     /* use reflection formula if very negative */
@@ -64,8 +73,20 @@ choose_small(int * reflect, slong * r, slong * n,
         *reflect = 0;
     }
 
+    BETA = GAMMA_STIRLING_BETA;
+
+    if (BETA < 0.12)
+    {
+        if (prec <= 32768)
+            BETA = 0.17;
+        else if (prec <= 131072)
+            BETA = 0.20;
+        else
+            BETA = 0.24;
+    }
+
     /* argument reduction until |z| >= w */
-    w = FLINT_MAX(1.0, GAMMA_STIRLING_BETA * prec);
+    w = FLINT_MAX(1.0, BETA * prec);
 
     rr = 0;
     while (x < 1.0 || x*x + y*y < w*w)
@@ -210,7 +231,7 @@ arb_hypgeom_gamma_stirling_inner(arb_t s, const arb_t z, slong N, slong prec)
     arb_add(t, t, logz, prec);
 
     /* sum part */
-    if (prec <= 256)
+    if (prec <= 128 || (prec <= 768 && N <= 40) || (prec <= 2048 && N <= 16))
         arb_hypgeom_gamma_stirling_sum_horner(s, z, N, prec);
     else
         arb_hypgeom_gamma_stirling_sum_improved(s, z, N, 0, prec);
