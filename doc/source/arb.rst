@@ -830,7 +830,9 @@ Arithmetic
 
 .. function:: void arb_fma(arb_t res, const arb_t x, const arb_t y, const arb_t z, slong prec)
               void arb_fma_arf(arb_t res, const arb_t x, const arf_t y, const arb_t z, slong prec)
+              void arb_fma_si(arb_t res, const arb_t x, slong y, const arb_t z, slong prec)
               void arb_fma_ui(arb_t res, const arb_t x, ulong y, const arb_t z, slong prec)
+              void arb_fma_fmpz(arb_t res, const arb_t x, const fmpz_t y, const arb_t z, slong prec)
 
     Sets *res* to `x \cdot y + z`. This is equivalent to an *addmul* except
     that *res* and *z* can be separate variables.
@@ -1580,17 +1582,21 @@ Other special functions
     is described in detail in [Joh2015]_.
 
 .. function:: void arb_euler_number_fmpz(arb_t res, const fmpz_t n, slong prec)
+              void arb_euler_number_ui(arb_t res, ulong n, slong prec)
 
-.. function:: void arb_euler_number_ui(arb_t res, ulong n, slong prec)
-
-    Sets *res* to the Euler number `E_n`, which is defined by having
+    Sets *res* to the Euler number `E_n`, which is defined by
     the exponential generating function `1 / \cosh(x)`.
+    The result will be exact if `E_n` is exactly representable
+    at the requested precision.
 
-    The Euler product for the Dirichlet beta function
-    (:func:`_acb_dirichlet_euler_product_real_ui`) is used to compute
-    a numerical approximation. If *prec* is more than enough to represent
-    the result exactly, the exact value is automatically determined
-    from a lower-precision approximation.
+.. function:: void arb_fmpz_euler_number_ui_multi_mod(fmpz_t res, ulong n, double alpha)
+              void arb_fmpz_euler_number_ui(fmpz_t res, ulong n)
+
+    Computes the Euler number `E_n` as an exact integer. The default
+    algorithm uses a table lookup, the Dirichlet beta function or a
+    hybrid modular algorithm depending on the size of *n*.
+    The *multi_mod* algorithm accepts a tuning parameter *alpha* which
+    can be set to a negative value to use defaults.
 
 .. function:: void arb_partitions_fmpz(arb_t res, const fmpz_t n, slong prec)
 
@@ -1601,6 +1607,16 @@ Other special functions
     the leading term in the Hardy-Ramanujan asymptotic series is used
     together with an error bound. Otherwise, the exact value is computed
     and rounded.
+
+.. function:: void arb_primorial_nth_ui(arb_t res, ulong n, slong prec)
+
+    Sets *res* to the *nth* primorial, defined as the product of the
+    first *n* prime numbers. The running time is quasilinear in *n*.
+
+.. function:: void arb_primorial_ui(arb_t res, ulong n, slong prec)
+
+    Sets *res* to the primorial defined as the product of the positive
+    integers up to and including *n*. The running time is quasilinear in *n*.
 
 Internals for computing elementary functions
 -------------------------------------------------------------------------------

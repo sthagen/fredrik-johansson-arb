@@ -13,42 +13,6 @@
 #include "acb_hypgeom.h"
 
 void
-arb_hypgeom_erf(arb_t res, const arb_t z, slong prec)
-{
-    if (!arb_is_finite(z))
-    {
-        arb_indeterminate(res);
-    }
-    else
-    {
-        acb_t t;
-        acb_init(t);
-        arb_set(acb_realref(t), z);
-        acb_hypgeom_erf(t, t, prec);
-        arb_swap(res, acb_realref(t));
-        acb_clear(t);
-    }
-}
-
-void
-arb_hypgeom_erfc(arb_t res, const arb_t z, slong prec)
-{
-    if (!arb_is_finite(z))
-    {
-        arb_indeterminate(res);
-    }
-    else
-    {
-        acb_t t;
-        acb_init(t);
-        arb_set(acb_realref(t), z);
-        acb_hypgeom_erfc(t, t, prec);
-        arb_swap(res, acb_realref(t));
-        acb_clear(t);
-    }
-}
-
-void
 arb_hypgeom_erfi(arb_t res, const arb_t z, slong prec)
 {
     if (!arb_is_finite(z))
@@ -101,42 +65,6 @@ arb_hypgeom_ei(arb_t res, const arb_t z, slong prec)
         acb_init(t);
         arb_set(acb_realref(t), z);
         acb_hypgeom_ei(t, t, prec);
-        arb_swap(res, acb_realref(t));
-        acb_clear(t);
-    }
-}
-
-void
-arb_hypgeom_si(arb_t res, const arb_t z, slong prec)
-{
-    if (!arb_is_finite(z))
-    {
-        arb_indeterminate(res);
-    }
-    else
-    {
-        acb_t t;
-        acb_init(t);
-        arb_set(acb_realref(t), z);
-        acb_hypgeom_si(t, t, prec);
-        arb_swap(res, acb_realref(t));
-        acb_clear(t);
-    }
-}
-
-void
-arb_hypgeom_ci(arb_t res, const arb_t z, slong prec)
-{
-    if (!arb_is_finite(z) || !arb_is_positive(z))
-    {
-        arb_indeterminate(res);
-    }
-    else
-    {
-        acb_t t;
-        acb_init(t);
-        arb_set(acb_realref(t), z);
-        acb_hypgeom_ci(t, t, prec);
         arb_swap(res, acb_realref(t));
         acb_clear(t);
     }

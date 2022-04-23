@@ -73,6 +73,10 @@ void arb_hypgeom_1f1(arb_t res, const arb_t a, const arb_t b, const arb_t z, int
 void arb_hypgeom_u(arb_t res, const arb_t a, const arb_t b, const arb_t z, slong prec);
 void arb_hypgeom_2f1(arb_t res, const arb_t a, const arb_t b, const arb_t c, const arb_t z, int regularized, slong prec);
 
+void arb_hypgeom_1f1_integration(arb_t res, const arb_t a, const arb_t b, const arb_t z, int regularized, slong prec);
+void arb_hypgeom_u_integration(arb_t res, const arb_t a, const arb_t b, const arb_t z, slong prec);
+void arb_hypgeom_2f1_integration(arb_t res, const arb_t a, const arb_t b, const arb_t c, const arb_t z, int regularized, slong prec);
+
 void arb_hypgeom_erf(arb_t res, const arb_t z, slong prec);
 void _arb_hypgeom_erf_series(arb_ptr g, arb_srcptr h, slong hlen, slong len, slong prec);
 void arb_hypgeom_erf_series(arb_poly_t g, const arb_poly_t h, slong len, slong prec);
@@ -85,6 +89,9 @@ void arb_hypgeom_erfi(arb_t res, const arb_t z, slong prec);
 void _arb_hypgeom_erfi_series(arb_ptr g, arb_srcptr h, slong hlen, slong len, slong prec);
 void arb_hypgeom_erfi_series(arb_poly_t g, const arb_poly_t h, slong len, slong prec);
 
+void arb_hypgeom_erfinv(arb_t res, const arb_t x, slong prec);
+void arb_hypgeom_erfcinv(arb_t res, const arb_t x, slong prec);
+
 void arb_hypgeom_fresnel(arb_t res1, arb_t res2, const arb_t z, int normalized, slong prec);
 void _arb_hypgeom_fresnel_series(arb_ptr s, arb_ptr c, arb_srcptr h, slong hlen, int normalized, slong len, slong prec);
 void arb_hypgeom_fresnel_series(arb_poly_t s, arb_poly_t c, const arb_poly_t h, int normalized, slong len, slong prec);
@@ -93,11 +100,17 @@ void arb_hypgeom_ei(arb_t res, const arb_t z, slong prec);
 void _arb_hypgeom_ei_series(arb_ptr g, arb_srcptr h, slong hlen, slong len, slong prec);
 void arb_hypgeom_ei_series(arb_poly_t g, const arb_poly_t h, slong len, slong prec);
 
+void _arb_hypgeom_si_asymp(arb_t res, const arb_t z, slong N, slong prec);
+void _arb_hypgeom_si_1f2(arb_t res, const arb_t z, slong N, slong wp, slong prec);
 void arb_hypgeom_si(arb_t res, const arb_t z, slong prec);
+
 void _arb_hypgeom_si_series(arb_ptr g, arb_srcptr h, slong hlen, slong len, slong prec);
 void arb_hypgeom_si_series(arb_poly_t g, const arb_poly_t h, slong len, slong prec);
 
+void _arb_hypgeom_ci_asymp(arb_t res, const arb_t z, slong N, slong prec);
+void _arb_hypgeom_ci_2f3(arb_t res, const arb_t z, slong N, slong wp, slong prec);
 void arb_hypgeom_ci(arb_t res, const arb_t z, slong prec);
+
 void _arb_hypgeom_ci_series(arb_ptr g, arb_srcptr h, slong hlen, slong len, slong prec);
 void arb_hypgeom_ci_series(arb_poly_t g, const arb_poly_t h, slong len, slong prec);
 
@@ -122,6 +135,9 @@ void arb_hypgeom_bessel_k(arb_t res, const arb_t nu, const arb_t z, slong prec);
 void arb_hypgeom_bessel_i_scaled(arb_t res, const arb_t nu, const arb_t z, slong prec);
 void arb_hypgeom_bessel_k_scaled(arb_t res, const arb_t nu, const arb_t z, slong prec);
 
+void arb_hypgeom_bessel_i_integration(arb_t res, const arb_t nu, const arb_t z, int scaled, slong prec);
+void arb_hypgeom_bessel_k_integration(arb_t res, const arb_t nu, const arb_t z, int scaled, slong prec);
+
 void arb_hypgeom_airy(arb_t ai, arb_t aip, arb_t bi, arb_t bip, const arb_t z, slong prec);
 void arb_hypgeom_airy_jet(arb_ptr ai, arb_ptr bi, const arb_t z, slong len, slong prec);
 void arb_hypgeom_airy_series(arb_poly_t ai, arb_poly_t ai_prime,
@@ -145,6 +161,8 @@ void arb_hypgeom_gamma_lower_series(arb_poly_t g, const arb_t s, const arb_poly_
 void arb_hypgeom_gamma_upper(arb_t res, const arb_t s, const arb_t z, int regularized, slong prec);
 void _arb_hypgeom_gamma_upper_series(arb_ptr g, const arb_t s, arb_srcptr h, slong hlen, int regularized, slong n, slong prec);
 void arb_hypgeom_gamma_upper_series(arb_poly_t g, const arb_t s, const arb_poly_t h, int regularized, slong n, slong prec);
+
+void arb_hypgeom_gamma_upper_integration(arb_t res, const arb_t s, const arb_t z, int regularized, slong prec);
 
 void arb_hypgeom_beta_lower(arb_t res, const arb_t a, const arb_t c, const arb_t z, int regularized, slong prec);
 void arb_hypgeom_beta_lower_series(arb_poly_t res, const arb_t a, const arb_t b, const arb_poly_t z, int regularized, slong len, slong prec);
@@ -171,6 +189,29 @@ void arb_hypgeom_legendre_p_ui_root(arb_t res, arb_t weight, ulong n, ulong k, s
 void arb_hypgeom_central_bin_ui(arb_t res, ulong n, slong prec);
 
 void arb_hypgeom_dilog(arb_t res, const arb_t z, slong prec);
+
+void _arb_hypgeom_gamma_lower_sum_rs_1(arb_t res, ulong p, ulong q, const arb_t z, slong N, slong prec);
+void _arb_hypgeom_gamma_upper_sum_rs_1(arb_t res, ulong p, ulong q, const arb_t z, slong N, slong prec);
+
+slong _arb_hypgeom_gamma_upper_fmpq_inf_choose_N(mag_t err, const fmpq_t a, const arb_t z, const mag_t abs_tol);
+void _arb_hypgeom_gamma_upper_fmpq_inf_bsplit(arb_t res, const fmpq_t a, const arb_t z, slong N, slong prec);
+slong _arb_hypgeom_gamma_lower_fmpq_0_choose_N(mag_t err, const fmpq_t a, const arb_t z, const mag_t abs_tol);
+void _arb_hypgeom_gamma_lower_fmpq_0_bsplit(arb_t res, const fmpq_t a, const arb_t z, slong N, slong prec);
+void _arb_gamma_upper_fmpq_step_bsplit(arb_t Gz1, const fmpq_t a, const arb_t z0, const arb_t z1, const arb_t Gz0, const arb_t expmz0, const mag_t abs_tol, slong prec);
+slong _arb_hypgeom_gamma_upper_singular_si_choose_N(mag_t err, slong n, const arb_t z, const mag_t abs_tol);
+void _arb_hypgeom_gamma_upper_singular_si_bsplit(arb_t res, slong n, const arb_t z, slong N, slong prec);
+int arb_hypgeom_erf_bb(arb_t res, const arb_t z, int complementary, slong prec);
+
+void arb_hypgeom_sum_fmpq_arb_forward(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_arb_rs(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_arb_bs(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_arb(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+
+void arb_hypgeom_sum_fmpq_imag_arb_forward(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_imag_arb_rs(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_imag_arb_bs(arb_t res_real, arb_t res_imag, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+void arb_hypgeom_sum_fmpq_imag_arb(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec);
+
 
 #ifdef __cplusplus
 }

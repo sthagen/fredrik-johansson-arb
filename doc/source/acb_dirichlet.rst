@@ -193,7 +193,7 @@ the evaluation.
 .. function:: void acb_dirichlet_zeta_jet_rs(acb_t res, const acb_t s, slong len, slong prec)
 
     Computes the first *len* terms of the Taylor series of the Riemann zeta
-    function at *s* using the Riemann siegel formula. This function currently
+    function at *s* using the Riemann Siegel formula. This function currently
     only supports *len* = 1 or *len* = 2. A finite difference is used
     to compute the first derivative.
 
@@ -247,7 +247,7 @@ Hurwitz zeta function precomputation
 
     Clears the precomputed data.
 
-.. function:: void acb_dirichler_hurwitz_precomp_choose_param(ulong * A, ulong * K, ulong * N, const acb_t s, double num_eval, slong prec)
+.. function:: void acb_dirichlet_hurwitz_precomp_choose_param(ulong * A, ulong * K, ulong * N, const acb_t s, double num_eval, slong prec)
 
     Chooses precomputation parameters *A*, *K* and *N* to minimize
     the cost of *num_eval* evaluations of the Hurwitz zeta function
@@ -266,6 +266,34 @@ Hurwitz zeta function precomputation
 .. function:: void acb_dirichlet_hurwitz_precomp_eval(acb_t res, const acb_dirichlet_hurwitz_precomp_t pre, ulong p, ulong q, slong prec)
 
     Evaluates `\zeta(s,p/q)` using precomputed data, assuming that `0 < p/q \le 1`.
+
+Lerch transcendent
+-------------------------------------------------------------------------------
+
+.. function:: void acb_dirichlet_lerch_phi_integral(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec)
+              void acb_dirichlet_lerch_phi_direct(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec)
+              void acb_dirichlet_lerch_phi(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec)
+
+    Computes the Lerch transcendent
+
+    .. math ::
+
+        \Phi(z,s,a) = \sum_{k=0}^{\infty} \frac{z^k}{(k+a)^s}
+
+    which is analytically continued for `|z| \ge 1`.
+
+    The *direct* version evaluates a truncation of the defining series.
+    The *integral* version uses the Hankel contour integral
+
+    .. math ::
+
+        \Phi(z,s,a) = -\frac{\Gamma(1-s)}{2 \pi i} \int_C \frac{(-t)^{s-1} e^{-a t}}{1 - z e^{-t}} dt
+
+    where the path is deformed as needed to avoid poles and branch
+    cuts of the integrand.
+    The default method chooses an algorithm automatically and also
+    checks for some special cases where the function can be expressed
+    in terms of simpler functions (Hurwitz zeta, polylogarithms).
 
 Stieltjes constants
 -------------------------------------------------------------------------------
@@ -541,6 +569,13 @@ Dirichlet L-functions
 
     Computes `L(s,\chi)` using a default choice of algorithm.
 
+.. function:: void acb_dirichlet_l_fmpq(acb_t res, const fmpq_t s, const dirichlet_group_t G, const dirichlet_char_t chi, slong prec)
+              void acb_dirichlet_l_fmpq_afe(acb_t res, const fmpq_t s, const dirichlet_group_t G, const dirichlet_char_t chi, slong prec)
+
+    Computes `L(s,\chi)` where *s* is a rational number.
+    The *afe* version uses the approximate functional equation;
+    the default version chooses an algorithm automatically.
+
 .. function:: void acb_dirichlet_l_vec_hurwitz(acb_ptr res, const acb_t s, const acb_dirichlet_hurwitz_precomp_t precomp, const dirichlet_group_t G, slong prec)
 
     Compute all values `L(s,\chi)` for `\chi` mod `q`, using the
@@ -792,7 +827,7 @@ and formulas described by David J. Platt in [Pla2017]_.
     The number of obtained consecutive zeros is returned. The first two
     function variants each make a single call to Platt's grid evaluation
     of the scaled Lambda function, whereas the third variant performs as many
-    evluations as necessary to obtain *len* consecutive zeros.
+    evaluations as necessary to obtain *len* consecutive zeros.
     The final several parameters of the underscored local variant have the same
     meanings as in the functions :func:`acb_dirichlet_platt_multieval`
     and :func:`acb_dirichlet_platt_ws_interpolation`. The non-underscored

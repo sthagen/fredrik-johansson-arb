@@ -27,9 +27,9 @@ extern "C" {
 #endif
 
 #define __ARB_VERSION 2
-#define __ARB_VERSION_MINOR 21
-#define __ARB_VERSION_PATCHLEVEL 0
-#define ARB_VERSION "2.21.0"
+#define __ARB_VERSION_MINOR 22
+#define __ARB_VERSION_PATCHLEVEL 1
+#define ARB_VERSION "2.22.1"
 #define __ARB_RELEASE (__ARB_VERSION * 10000 + \
                          __ARB_VERSION_MINOR * 100 + \
                          __ARB_VERSION_PATCHLEVEL)
@@ -427,7 +427,9 @@ void arb_submul_fmpz(arb_t z, const arb_t x, const fmpz_t y, slong prec);
 
 void arb_fma(arb_t res, const arb_t x, const arb_t y, const arb_t z, slong prec);
 void arb_fma_arf(arb_t res, const arb_t x, const arf_t y, const arb_t z, slong prec);
+void arb_fma_si(arb_t res, const arb_t x, slong y, const arb_t z, slong prec);
 void arb_fma_ui(arb_t res, const arb_t x, ulong y, const arb_t z, slong prec);
+void arb_fma_fmpz(arb_t res, const arb_t x, const fmpz_t y, const arb_t z, slong prec);
 
 void arb_dot_simple(arb_t res, const arb_t initial, int subtract,
     arb_srcptr x, slong xstep, arb_srcptr y, slong ystep, slong len, slong prec);
@@ -607,9 +609,14 @@ void arb_bell_ui(arb_t res, ulong n, slong prec);
 
 void arb_euler_number_fmpz(arb_t res, const fmpz_t n, slong prec);
 void arb_euler_number_ui(arb_t res, ulong n, slong prec);
+void arb_fmpz_euler_number_ui_multi_mod(fmpz_t res, ulong n, double alpha);
+void arb_fmpz_euler_number_ui(fmpz_t res, ulong n);
 
 void arb_partitions_fmpz(arb_t res, const fmpz_t n, slong prec);
 void arb_partitions_ui(arb_t res, ulong n, slong prec);
+
+void arb_primorial_nth_ui(arb_t res, ulong n, slong prec);
+void arb_primorial_ui(arb_t res, ulong n, slong prec);
 
 void arb_lambertw(arb_t res, const arb_t x, int flags, slong prec);
 

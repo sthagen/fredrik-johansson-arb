@@ -95,7 +95,7 @@ Gamma function
     series together with argument reduction. If *reciprocal* is set,
     the reciprocal gamma function is computed instead.
 
-.. function:: int arb_hypgeom_gamma_taylor(arb_t res, const arb_t x,int reciprocal,  slong prec)
+.. function:: int arb_hypgeom_gamma_taylor(arb_t res, const arb_t x, int reciprocal, slong prec)
 
     Attempts to compute the gamma function of *x* using Taylor series
     together with argument reduction. This is only supported if *x* and *prec*
@@ -155,9 +155,33 @@ Confluent hypergeometric functions
 
     Alias for :func:`arb_hypgeom_m`.
 
+.. function:: void arb_hypgeom_1f1_integration(arb_t res, const arb_t a, const arb_t b, const arb_t z, int regularized, slong prec)
+
+    Computes the confluent hypergeometric function using numerical integration
+    of the representation
+
+    .. math ::
+
+        {}_1F_1(a,b,z) = \frac{\Gamma(b)}{\Gamma(a) \Gamma(b-a)} \int_0^1 e^{zt} t^{a-1} (1-t)^{b-a-1} dt.
+
+    This algorithm can be useful if the parameters are large. This will currently
+    only return a finite enclosure if `a \ge 1` and `b - a \ge 1`.
+
 .. function:: void arb_hypgeom_u(arb_t res, const arb_t a, const arb_t b, const arb_t z, slong prec)
 
     Computes the confluent hypergeometric function `U(a,b,z)`.
+
+.. function:: void arb_hypgeom_u_integration(arb_t res, const arb_t a, const arb_t b, const arb_t z, int regularized, slong prec)
+
+    Computes the confluent hypergeometric function `U(a,b,z)` using numerical integration
+    of the representation
+
+    .. math ::
+
+        U(a,b,z) = \frac{1}{\Gamma(a)} \int_0^{\infty} e^{-zt} t^{a-1} (1+t)^{b-a-1} dt.
+
+    This algorithm can be useful if the parameters are large. This will currently
+    only return a finite enclosure if `a \ge 1` and `z > 0`.
 
 Gauss hypergeometric function
 -------------------------------------------------------------------------------
@@ -171,6 +195,20 @@ Gauss hypergeometric function
 
     Additional evaluation flags can be passed via the *regularized*
     argument; see :func:`acb_hypgeom_2f1` for documentation.
+
+.. function:: void arb_hypgeom_2f1_integration(arb_t res, const arb_t a, const arb_t b, const arb_t z, int regularized, slong prec)
+
+    Computes the Gauss hypergeometric function using numerical integration
+    of the representation
+
+    .. math ::
+
+        {}_2F_1(a,b,c,z) = \frac{\Gamma(a)}{\Gamma(b) \Gamma(c-b)} \int_0^1 t^{b-1} (1-t)^{c-b-1} (1-zt)^{-a} dt.
+
+    This algorithm can be useful if the parameters are large. This will currently
+    only return a finite enclosure if `b \ge 1` and `c - b \ge 1` and
+    `z < 1`, possibly with *a* and *b* exchanged.
+
 
 Error functions and Fresnel integrals
 -------------------------------------------------------------------------------
@@ -208,6 +246,12 @@ Error functions and Fresnel integrals
     Computes the imaginary error function of the power series *z*,
     truncated to length *len*.
 
+.. function:: void arb_hypgeom_erfinv(arb_t res, const arb_t z, slong prec)
+              void arb_hypgeom_erfcinv(arb_t res, const arb_t z, slong prec)
+
+    Computes the inverse error function `\operatorname{erf}^{-1}(z)`
+    or inverse complementary error function `\operatorname{erfc}^{-1}(z)`.
+
 .. function:: void arb_hypgeom_fresnel(arb_t res1, arb_t res2, const arb_t z, int normalized, slong prec)
 
     Sets *res1* to the Fresnel sine integral `S(z)` and *res2* to
@@ -241,6 +285,11 @@ Incomplete gamma and beta functions
     `z^{-s} \Gamma(s,z) = E_{1-s}(z)` instead (this option is mainly
     intended for internal use; :func:`arb_hypgeom_expint` is the intended
     interface for computing the exponential integral).
+
+.. function:: void arb_hypgeom_gamma_upper_integration(arb_t res, const arb_t s, const arb_t z, int regularized, slong prec)
+
+    Computes the upper incomplete gamma function using numerical
+    integration.
 
 .. function:: void _arb_hypgeom_gamma_upper_series(arb_ptr res, const arb_t s, arb_srcptr z, slong zlen, int regularized, slong n, slong prec)
               void arb_hypgeom_gamma_upper_series(arb_poly_t res, const arb_t s, const arb_poly_t z, int regularized, slong n, slong prec)
@@ -285,6 +334,65 @@ Incomplete gamma and beta functions
     The underscore method requires positive lengths and does not support
     aliasing.
 
+
+Internal evaluation functions
+................................................................................
+
+.. function:: void _arb_hypgeom_gamma_lower_sum_rs_1(arb_t res, ulong p, ulong q, const arb_t z, slong N, slong prec)
+
+    Computes `\sum_{k=0}^{N-1} z^k / (a)_k` where `a = p/q` using
+    rectangular splitting. It is assumed that `p + qN` fits in a limb.
+
+.. function:: void _arb_hypgeom_gamma_upper_sum_rs_1(arb_t res, ulong p, ulong q, const arb_t z, slong N, slong prec)
+
+    Computes `\sum_{k=0}^{N-1} (a)_k / z^k` where `a = p/q` using
+    rectangular splitting. It is assumed that `p + qN` fits in a limb.
+
+.. function:: slong _arb_hypgeom_gamma_upper_fmpq_inf_choose_N(mag_t err, const fmpq_t a, const arb_t z, const mag_t abs_tol)
+
+    Returns number of terms *N* and sets *err* to the truncation error for evaluating
+    `\Gamma(a,z)` using the asymptotic series at infinity, targeting an absolute
+    tolerance of *abs_tol*. The error may be set to *err* if the tolerance
+    cannot be achieved. Assumes that *z* is positive.
+
+.. function:: void _arb_hypgeom_gamma_upper_fmpq_inf_bsplit(arb_t res, const fmpq_t a, const arb_t z, slong N, slong prec)
+
+    Sets *res* to the approximation of `\Gamma(a,z)` obtained by truncating
+    the asymptotic series at infinity before term *N*.
+    The truncation error bound has to be added separately.
+
+.. function:: slong _arb_hypgeom_gamma_lower_fmpq_0_choose_N(mag_t err, const fmpq_t a, const arb_t z, const mag_t abs_tol)
+
+    Returns number of terms *N* and sets *err* to the truncation error for evaluating
+    `\gamma(a,z)` using the Taylor series at zero, targeting an absolute
+    tolerance of *abs_tol*. Assumes that *z* is positive.
+
+.. function:: void _arb_hypgeom_gamma_lower_fmpq_0_bsplit(arb_t res, const fmpq_t a, const arb_t z, slong N, slong prec)
+
+    Sets *res* to the approximation of `\gamma(a,z)` obtained by truncating
+    the Taylor series at zero before term *N*.
+    The truncation error bound has to be added separately.
+
+.. function:: slong _arb_hypgeom_gamma_upper_singular_si_choose_N(mag_t err, slong n, const arb_t z, const mag_t abs_tol)
+
+    Returns number of terms *N* and sets *err* to the truncation error for evaluating
+    `\Gamma(-n,z)` using the Taylor series at zero, targeting an absolute
+    tolerance of *abs_tol*.
+
+.. function:: void _arb_hypgeom_gamma_upper_singular_si_bsplit(arb_t res, slong n, const arb_t z, slong N, slong prec)
+
+    Sets *res* to the approximation of `\Gamma(-n,z)` obtained by truncating
+    the Taylor series at zero before term *N*.
+    The truncation error bound has to be added separately.
+
+.. function:: void _arb_gamma_upper_fmpq_step_bsplit(arb_t Gz1, const fmpq_t a, const arb_t z0, const arb_t z1, const arb_t Gz0, const arb_t expmz0, const mag_t abs_tol, slong prec)
+
+    Given *Gz0* and *expmz0* representing the values `\Gamma(a,z_0)` and `\exp(-z_0)`,
+    computes `\Gamma(a,z_1)` using the Taylor series at `z_0` evaluated
+    using binary splitting,
+    targeting an absolute error of *abs_tol*.
+    Assumes that `z_0` and `z_1` are positive.
+
 Exponential and trigonometric integrals
 -------------------------------------------------------------------------------
 
@@ -302,7 +410,9 @@ Exponential and trigonometric integrals
     Computes the exponential integral of the power series *z*,
     truncated to length *len*.
 
-.. function:: void arb_hypgeom_si(arb_t res, const arb_t z, slong prec)
+.. function:: void _arb_hypgeom_si_asymp(arb_t res, const arb_t z, slong N, slong prec)
+              void _arb_hypgeom_si_1f2(arb_t res, const arb_t z, slong N, slong wp, slong prec)
+              void arb_hypgeom_si(arb_t res, const arb_t z, slong prec)
 
     Computes the sine integral `\operatorname{Si}(z)`.
 
@@ -312,7 +422,9 @@ Exponential and trigonometric integrals
     Computes the sine integral of the power series *z*,
     truncated to length *len*.
 
-.. function:: void arb_hypgeom_ci(arb_t res, const arb_t z, slong prec)
+.. function:: void _arb_hypgeom_ci_asymp(arb_t res, const arb_t z, slong N, slong prec)
+              void _arb_hypgeom_ci_2f3(arb_t res, const arb_t z, slong N, slong wp, slong prec)
+              void arb_hypgeom_ci(arb_t res, const arb_t z, slong prec)
 
     Computes the cosine integral `\operatorname{Ci}(z)`.
     The result is indeterminate if `z < 0` since the value of the function would be complex.
@@ -392,6 +504,11 @@ Bessel functions
 .. function:: void arb_hypgeom_bessel_k_scaled(arb_t res, const arb_t nu, const arb_t z, slong prec)
 
     Computes the function `e^{z} K_{\nu}(z)`.
+
+.. function:: void arb_hypgeom_bessel_i_integration(arb_t res, const arb_t nu, const arb_t z, int scaled, slong prec)
+              void arb_hypgeom_bessel_k_integration(arb_t res, const arb_t nu, const arb_t z, int scaled, slong prec)
+
+    Computes the modified Bessel functions using numerical integration.
 
 Airy functions
 -------------------------------------------------------------------------------
@@ -536,3 +653,30 @@ Dilogarithm
 
     Computes the dilogarithm `\operatorname{Li}_2(z)`.
 
+Hypergeometric sums
+-------------------------------------------------------------------------------
+
+.. function:: void arb_hypgeom_sum_fmpq_arb_forward(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+              void arb_hypgeom_sum_fmpq_arb_rs(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+              void arb_hypgeom_sum_fmpq_arb(arb_t res, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+
+    Sets *res* to the finite hypergeometric sum
+    `\sum_{n=0}^{N-1} (\textbf{a})_n z^n / (\textbf{b})_n`
+    where `\textbf{x}_n = (x_1)_n (x_2)_n \cdots`,
+    given vectors of rational parameters *a* (of length *alen*)
+    and *b* (of length *blen*).
+    If *reciprocal* is set, replace `z` by `1 / z`.
+    The *forward* version uses the forward recurrence, optimized by
+    delaying divisions, the *rs* version
+    uses rectangular splitting, and the default version uses
+    an automatic algorithm choice.
+
+.. function:: void arb_hypgeom_sum_fmpq_imag_arb_forward(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+              void arb_hypgeom_sum_fmpq_imag_arb_rs(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+              void arb_hypgeom_sum_fmpq_imag_arb_bs(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+              void arb_hypgeom_sum_fmpq_imag_arb(arb_t res1, arb_t res2, const fmpq * a, slong alen, const fmpq * b, slong blen, const arb_t z, int reciprocal, slong N, slong prec)
+
+    Sets *res1* and *res2* to the real and imaginary part of the
+    finite hypergeometric sum
+    `\sum_{n=0}^{N-1} (\textbf{a})_n (i z)^n / (\textbf{b})_n`.
+    If *reciprocal* is set, replace `z` by `1 / z`.

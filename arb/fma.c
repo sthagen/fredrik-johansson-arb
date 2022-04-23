@@ -39,6 +39,13 @@ arb_fma_arf(arb_t res, const arb_t x, const arf_t y, const arb_t z, slong prec)
         if (inexact)
             arf_mag_fast_add_ulp(arb_radref(res), arb_radref(res), arb_midref(res), prec);
     }
+    else if (arf_is_inf(y) && arb_is_nonzero(x))
+    {
+        if (arf_sgn(arb_midref(x)) > 0)
+            arb_add_arf(res, z, y, prec);
+        else
+            arb_sub_arf(res, z, y, prec);
+    }
     else
     {
         mag_t tm;
@@ -91,6 +98,20 @@ arb_fma(arb_t res, const arb_t x, const arb_t y, const arb_t z, slong prec)
 
         *arb_radref(res) = *zr;
     }
+    else if (arf_is_inf(arb_midref(x)) && mag_is_finite(arb_radref(x)) && arb_is_nonzero(y))
+    {
+        if (arf_sgn(arb_midref(y)) > 0)
+            arb_add_arf(res, z, arb_midref(x), prec);
+        else
+            arb_sub_arf(res, z, arb_midref(x), prec);
+    }
+    else if (arf_is_inf(arb_midref(y)) && mag_is_finite(arb_radref(y)) && arb_is_nonzero(x))
+    {
+        if (arf_sgn(arb_midref(x)) > 0)
+            arb_add_arf(res, z, arb_midref(y), prec);
+        else
+            arb_sub_arf(res, z, arb_midref(y), prec);
+    }
     else
     {
         mag_init_set_arf(xm, arb_midref(x));
@@ -121,5 +142,32 @@ arb_fma_ui(arb_t res, const arb_t x, ulong y, const arb_t z, slong prec)
     arf_t t;
     arf_init_set_ui(t, y); /* no need to free */
     arb_fma_arf(res, x, t, z, prec);
+}
+
+void
+arb_fma_si(arb_t res, const arb_t x, slong y, const arb_t z, slong prec)
+{
+    arf_t t;
+    arf_init_set_si(t, y); /* no need to free */
+    arb_fma_arf(res, x, t, z, prec);
+}
+
+void
+arb_fma_fmpz(arb_t res, const arb_t x, const fmpz_t y, const arb_t z, slong prec)
+{
+    arf_t t;
+
+    if (!COEFF_IS_MPZ(*y))
+    {
+        arf_init_set_si(t, *y); /* no need to free */
+        arb_fma_arf(res, x, t, z, prec);
+    }
+    else
+    {
+        arf_init(t);
+        arf_set_fmpz(t, y);
+        arb_fma_arf(res, x, t, z, prec);
+        arf_clear(t);
+    }
 }
 

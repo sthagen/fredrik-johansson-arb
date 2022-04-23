@@ -323,11 +323,15 @@ Comparisons and bounds
 -------------------------------------------------------------------------------
 
 .. function:: int arf_equal(const arf_t x, const arf_t y)
+              int arf_equal_si(const arf_t x, slong y)
+              int arf_equal_ui(const arf_t x, ulong y)
+              int arf_equal_d(const arf_t x, double y)
 
-.. function:: int arf_equal_si(const arf_t x, slong y)
+    Returns nonzero iff *x* and *y* are exactly equal. NaN is not
+    treated specially, i.e. NaN compares as equal to itself.
 
-    Returns nonzero iff *x* and *y* are exactly equal. This function does
-    not treat NaN specially, i.e. NaN compares as equal to itself.
+    For comparison with a *double*, the values -0 and +0 are
+    both treated as zero, and all NaN values are treated as identical.
 
 .. function:: int arf_cmp(const arf_t x, const arf_t y)
 
@@ -502,8 +506,12 @@ Input and output
 .. function:: void arf_printd(const arf_t x, slong d)
 
     Prints *x* as a decimal floating-point number, rounding to *d* digits.
-    This function is currently implemented using MPFR,
-    and does not support large exponents.
+    Rounding is faithful (at most 1 ulp error).
+
+.. function:: char * arf_get_str(const arf_t x, slong d)
+
+    Returns *x* as a decimal floating-point number, rounding to *d* digits.
+    Rounding is faithful (at most 1 ulp error).
 
 .. function:: void arf_fprint(FILE * file, const arf_t x)
 
@@ -512,8 +520,8 @@ Input and output
 .. function:: void arf_fprintd(FILE * file, const arf_t y, slong d)
 
     Prints *x* as a decimal floating-point number to the stream *file*,
-    rounding to *d* digits. This function is currently implemented using MPFR,
-    and does not support large exponents.
+    rounding to *d* digits.
+    Rounding is faithful (at most 1 ulp error).
 
 .. function:: char * arf_dump_str(const arf_t x)
 

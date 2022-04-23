@@ -48,6 +48,10 @@ void acb_dirichlet_zeta_jet(acb_t res, const acb_t s, int deflate, slong len, sl
 
 void acb_dirichlet_hurwitz(acb_t res, const acb_t s, const acb_t a, slong prec);
 
+void acb_dirichlet_lerch_phi_integral(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec);
+void acb_dirichlet_lerch_phi_direct(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec);
+void acb_dirichlet_lerch_phi(acb_t res, const acb_t z, const acb_t s, const acb_t a, slong prec);
+
 void acb_dirichlet_stieltjes(acb_t res, const fmpz_t n, const acb_t a, slong prec);
 
 typedef struct
@@ -144,6 +148,9 @@ void acb_dirichlet_l(acb_t res, const acb_t s, const dirichlet_group_t G, const 
 void acb_dirichlet_l_vec_hurwitz(acb_ptr res, const acb_t s, const acb_dirichlet_hurwitz_precomp_t precomp, const dirichlet_group_t G, slong prec);
 
 void acb_dirichlet_l_jet(acb_ptr res, const acb_t s, const dirichlet_group_t G, const dirichlet_char_t chi, int deflate, slong len, slong prec);
+
+void acb_dirichlet_l_fmpq_afe(acb_t res, const fmpq_t s, const dirichlet_group_t G, const dirichlet_char_t chi, slong prec);
+void acb_dirichlet_l_fmpq(acb_t res, const fmpq_t s, const dirichlet_group_t G, const dirichlet_char_t chi, slong prec);
 
 void _acb_dirichlet_l_series(acb_ptr res, acb_srcptr s, slong slen,
     const dirichlet_group_t G, const dirichlet_char_t chi,

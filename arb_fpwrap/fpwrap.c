@@ -590,7 +590,7 @@ int arb_fpwrap_double_4_int(double * res, arb_func_4_int func, double x1, double
     arb_set_d(arb_x1, x1);
     arb_set_d(arb_x2, x2);
     arb_set_d(arb_x3, x3);
-    arb_set_d(arb_x3, x4);
+    arb_set_d(arb_x4, x4);
 
     if (!arb_is_finite(arb_x1) || !arb_is_finite(arb_x2) || !arb_is_finite(arb_x3) || !arb_is_finite(arb_x4))
     {
@@ -1037,6 +1037,9 @@ DEF_CDOUBLE_FUN_1(erfc, acb_hypgeom_erfc)
 
 DEF_DOUBLE_FUN_1(erfi, arb_hypgeom_erfi)
 DEF_CDOUBLE_FUN_1(erfi, acb_hypgeom_erfi)
+
+DEF_DOUBLE_FUN_1(erfinv, arb_hypgeom_erfinv)
+DEF_DOUBLE_FUN_1(erfcinv, arb_hypgeom_erfcinv)
 
 static void _arb_hypgeom_fresnel_s(arb_t res, const arb_t x, int normalized, slong prec) { arb_hypgeom_fresnel(res, NULL, x, normalized, prec); }
 static void _arb_hypgeom_fresnel_c(arb_t res, const arb_t x, int normalized, slong prec) { arb_hypgeom_fresnel(NULL, res, x, normalized, prec); }
