@@ -47,6 +47,44 @@ use multiple threads::
     virt/peak/res/peak(MB): 25.56 29.19 9.58 13.11
     [2.71828182845904523536{...999959 digits...}01379817644769422819 +/- 1.39e-1000000]
 
+zeta_zeros.c
+-------------------------------------------------------------------------------
+
+This program computes one or several consecutive zeros of the
+Riemann zeta function on the critical line::
+
+    > build/examples/zeta_zeros -n 1 -count 10 -digits 30
+    1	14.1347251417346937904572519836
+    2	21.0220396387715549926284795939
+    3	25.0108575801456887632137909926
+    4	30.4248761258595132103118975306
+    5	32.9350615877391896906623689641
+    6	37.5861781588256712572177634807
+    7	40.9187190121474951873981269146
+    8	43.3270732809149995194961221654
+    9	48.0051508811671597279424727494
+    10	49.7738324776723021819167846786
+    cpu/wall(s): 0.01 0.01
+    virt/peak/res/peak(MB): 21.28 21.28 7.29 7.29
+
+Five zeros starting with the millionth::
+
+    > build/examples/zeta_zeros -n 1000000 -count 5 -digits 20
+    1000000	600269.67701244495552
+    1000001	600270.30109071169866
+    1000002	600270.74787059436613
+    1000003	600271.48637367364820
+    1000004	600271.76148042593778
+    cpu/wall(s): 0.03 0.03
+    virt/peak/res/peak(MB): 21.41 21.41 7.41 7.41
+
+The program supports the following options::
+
+    zeta_zeros [-n n] [-count n] [-prec n] [-digits n] [-threads n] [-platt] [-noplatt] [-v] [-verbose] [-h] [-help]
+
+With ``-platt``, Platt's algorithm is used, which may be faster when
+computing many zeros of large index simultaneously.
+
 bernoulli.c
 -------------------------------------------------------------------------------
 
@@ -101,7 +139,7 @@ the program computes the smallest eigenvalue of the Hilbert matrix
 keiper_li.c
 -------------------------------------------------------------------------------
 
-Given an input integer *n*, this program rigorously computes numerical
+]Given an input integer *n*, this program rigorously computes numerical
 values of the Keiper-Li coefficients
 `\lambda_0, \ldots, \lambda_n`. The Keiper-Li coefficients
 have the property that `\lambda_n > 0` for all `n > 0` if and only if the
@@ -243,7 +281,7 @@ The following options are available:
 
 With *function* 0, the program isolates roots of the Riemann zeta function
 on the critical line, and guarantees that no roots are missed
-(there are more efficient ways to do this, but it is a nice example)::
+(see `zeta_zeros.c` for a far more efficient way to do this)::
 
     > build/examples/real_roots 0 0.0 50.0 -verbose
     interval: [0, 50]
@@ -483,6 +521,24 @@ squarefree factorization::
     done!
     -1.0000
     cpu/wall(s): 0 0.001
+
+zeta_zeros.c
+-------------------------------------------------------------------------------
+
+This program finds the imaginary parts of consecutive nontrivial zeros
+of the Riemann zeta function by calling either
+:func:`acb_dirichlet_hardy_z_zeros` or
+:func:`acb_dirichlet_platt_local_hardy_z_zeros` depending on the height
+of the zeros and the number of zeros requested.
+The program takes the following arguments::
+
+    zeta_zeros [-n n] [-count n] [-prec n] [-threads n] [-platt] [-noplatt] [-v] [-verbose] [-h] [-help]
+
+    > build/examples/zeta_zeros -n 1048449114 -count 2
+    1048449114      [388858886.0022851217767970582 +/- 7.46e-20]
+    1048449115      [388858886.0023936897027167201 +/- 7.59e-20]
+    cpu/wall(s): 0.255 0.255
+    virt/peak/res/peak(MB): 26.77 26.77 7.88 7.88
 
 complex_plot.c
 -------------------------------------------------------------------------------
