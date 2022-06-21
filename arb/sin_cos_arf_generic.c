@@ -70,7 +70,7 @@ arb_sin_cos_taylor_sum_rs(arb_t s, const arb_t x, slong N, int cosine, slong pre
             flint_abort();
         }
 
-        tpow = _arb_vec_init(m + 1);
+        tpow = _arb_vec_init(m + 2);
 
         arb_mul(s, x, x, prec);
         _arb_vec_set_powers(tpow, s, m + 1, prec);
@@ -112,7 +112,16 @@ arb_sin_cos_taylor_sum_rs(arb_t s, const arb_t x, slong N, int cosine, slong pre
 
                 if (j == 0)
                 {
-                    arb_mul(s, s, tpow + m, tp);
+                    if (tp > 300000)
+                    {
+                        arb_set_round(tpow + m + 1, tpow + m, tp);
+                        arb_mul(s, s, tpow + m + 1, tp);
+                    }
+                    else
+                    {
+                        arb_mul(s, s, tpow + m, tp);
+                    }
+
                     j = m - 1;
                 }
                 else
@@ -126,7 +135,7 @@ arb_sin_cos_taylor_sum_rs(arb_t s, const arb_t x, slong N, int cosine, slong pre
         if (!cosine)
             arb_mul(s, s, x, prec);
 
-        _arb_vec_clear(tpow, m + 1);
+        _arb_vec_clear(tpow, m + 2);
     }
 
     arb_add_error_mag(s, err);
@@ -269,10 +278,26 @@ arb_sin_cos_arf_generic(arb_t res_sin, arb_t res_cos, const arf_t x, slong prec)
     }
     else if (mag <= 0)  /* todo: compare with pi/4-eps instead? */
     {
-        if (prec < 20000 || (flint_get_num_threads() == 1 && prec < 100000)
-            || mag < -prec / 16 ||
-            /* rs is faster for even smaller prec/N than this but has high memory usage */
-            (prec < 100000000 && mag < -prec / 128))
+        int want_rs;
+
+        if (prec < 20000 || mag < -prec / 16)
+        {
+            want_rs = 1;
+        }
+        else if (arf_bits(x) < prec / 128)
+        {
+            want_rs = 0;
+        }
+        else if (flint_get_num_threads() == 1)  /* todo: get_available_threads */
+        {
+            want_rs = (prec < 200000) || (prec < 1000000000 && mag < -prec / 5000);
+        }
+        else
+        {
+            want_rs = (prec < 20000) || (prec < 1000000000 && mag < -prec / 400);
+        }
+
+        if (want_rs)
             arb_sin_cos_arf_rs_generic(res_sin, res_cos, x, prec);
         else
             arb_sin_cos_arf_bb(res_sin, res_cos, x, prec);
