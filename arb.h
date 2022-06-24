@@ -897,8 +897,21 @@ ARB_DLL extern const mp_limb_t arb_log_tab11[1 << ARB_LOG_TAB11_BITS][ARB_LOG_TA
 ARB_DLL extern const mp_limb_t arb_log_tab12[1 << ARB_LOG_TAB12_BITS][ARB_LOG_TAB1_LIMBS];
 ARB_DLL extern const mp_limb_t arb_log_tab21[1 << ARB_LOG_TAB21_BITS][ARB_LOG_TAB2_LIMBS];
 ARB_DLL extern const mp_limb_t arb_log_tab22[1 << ARB_LOG_TAB22_BITS][ARB_LOG_TAB2_LIMBS];
-ARB_DLL extern const mp_limb_t arb_log_p_tab[13][ARB_LOG_TAB2_LIMBS];
 ARB_DLL extern const mp_srcptr arb_log_log2_tab;
+
+void arb_log_newton(arb_t res, const arb_t x, slong prec);
+void arb_log_arf_newton(arb_t res, const arf_t x, slong prec);
+
+/* logarithms of primes */
+
+#define ARB_LOG_PRIME_CACHE_NUM 13
+
+ARB_DLL extern const mp_limb_t arb_log_p_tab[ARB_LOG_PRIME_CACHE_NUM][ARB_LOG_TAB2_LIMBS];
+
+void arb_log_primes_vec_bsplit(arb_ptr res, slong n, slong prec);
+
+ARB_DLL extern FLINT_TLS_PREFIX arb_struct _arb_log_p_cache[ARB_LOG_PRIME_CACHE_NUM];
+void _arb_log_p_ensure_cached(slong prec);
 
 /* exponential implementation */
 
@@ -939,6 +952,14 @@ void _arb_exp_sum_bs_powtab(fmpz_t T, fmpz_t Q, flint_bitcnt_t * Qexp,
 
 void _arb_exp_sum_bs_simple(fmpz_t T, fmpz_t Q, flint_bitcnt_t * Qexp,
     const fmpz_t x, flint_bitcnt_t r, slong N);
+
+#define ARB_LOG_REDUCTION_DEFAULT_MAX_PREC 4000000
+#define ARB_EXP_LOG_REDUCTION_PREC 2240
+#define ARB_LOG_NEWTON_PREC 2800
+
+void arb_exp_arf_log_reduction(arb_t res, const arf_t x, slong prec, int minus_one);
+void arb_exp_arf_generic(arb_t z, const arf_t x, slong prec, int minus_one);
+void arb_exp_arf(arb_t z, const arf_t x, slong prec, int minus_one, slong maglim);
 
 /* sin/cos implementation */
 
@@ -982,6 +1003,19 @@ void arb_sin_cos_wide(arb_t s, arb_t c, const arb_t x, slong prec);
 
 void _arb_sin_cos_generic(arb_t s, arb_t c, const arf_t x, const mag_t xrad, slong prec);
 void arb_sin_cos_generic(arb_t s, arb_t c, const arb_t x, slong prec);
+
+void arb_atan_gauss_primes_vec_bsplit(arb_ptr res, slong n, slong prec);
+
+#define ARB_ATAN_GAUSS_PRIME_CACHE_NUM 13
+
+#define ARB_SIN_COS_ATAN_REDUCTION_DEFAULT_MAX_PREC 4000000
+#define ARB_SIN_COS_ATAN_REDUCTION_PREC 2600
+
+ARB_DLL extern FLINT_TLS_PREFIX arb_struct _arb_atan_gauss_p_cache[ARB_ATAN_GAUSS_PRIME_CACHE_NUM];
+void _arb_atan_gauss_p_ensure_cached(slong prec);
+
+void arb_sin_cos_arf_atan_reduction(arb_t res1, arb_t res2, const arf_t x, slong prec);
+
 
 ARB_INLINE flint_bitcnt_t
 _arb_mpn_leading_zeros(mp_srcptr d, mp_size_t n)

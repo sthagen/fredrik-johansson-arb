@@ -1818,6 +1818,66 @@ Internals for computing elementary functions
     :func:`arb_sin_cos` to take care of all cases without a fast
     path in that function.
 
+.. function:: void arb_log_primes_vec_bsplit(arb_ptr res, slong n, slong prec)
+
+    Sets *res* to a vector containing the natural logarithms of
+    the first *n* prime numbers, computed using binary splitting
+    applied to simultaneous Machine-type formulas. This function is not
+    optimized for large *n* or small *prec*.
+
+.. macro:: ARB_LOG_PRIME_CACHE_NUM
+
+    Number of logarithms of small prime numbers to cache automatically.
+
+.. macro:: ARB_LOG_REDUCTION_DEFAULT_MAX_PREC
+
+    Maximum precision to cache logarithms of small prime numbers
+    automatically.
+
+.. function:: void _arb_log_p_ensure_cached(slong prec)
+
+    Ensure that the internal cache of logarithms of small prime
+    numbers has entries to at least *prec* bits.
+
+.. function:: void arb_exp_arf_log_reduction(arb_t res, const arf_t x, slong prec, int minus_one)
+
+    Computes the exponential function using log reduction.
+
+.. function:: void arb_exp_arf_generic(arb_t z, const arf_t x, slong prec, int minus_one)
+
+    Computes the exponential function using an automatic choice
+    between rectangular splitting and the bit-burst algorithm,
+    without precomputation.
+
+.. function:: void arb_exp_arf(arb_t z, const arf_t x, slong prec, int minus_one, slong maglim)
+
+    Computes the exponential function using an automatic choice
+    between all implemented algorithms.
+
+.. function:: void arb_log_newton(arb_t res, const arb_t x, slong prec)
+              void arb_log_arf_newton(arb_t res, const arf_t x, slong prec)
+
+    Computes the logarithm using Newton iteration.
+
+.. macro:: ARB_ATAN_GAUSS_PRIME_CACHE_NUM
+
+     Number of primitive arctangents to cache automatically.
+
+.. function:: void arb_atan_gauss_primes_vec_bsplit(arb_ptr res, slong n, slong prec)
+
+    Sets *res* to the primitive angles corresponding to the
+    first *n* nonreal Gaussian primes (ignoring symmetries),
+    computed using binary splitting
+    applied to simultaneous Machine-type formulas. This function is not
+    optimized for large *n* or small *prec*.
+
+.. function:: void _arb_atan_gauss_p_ensure_cached(slong prec)
+
+.. function:: void arb_sin_cos_arf_atan_reduction(arb_t res1, arb_t res2, const arf_t x, slong prec)
+
+    Computes sin and/or cos using reduction by primitive angles.
+
+
 Vector functions
 -------------------------------------------------------------------------------
 
